@@ -44,7 +44,7 @@ export async function onRequest(context: {
   return new Response(JSON.stringify({ ok: true }), {
     headers: {
       'Content-Type': 'application/json',
-      'Set-Cookie': `cf_tetris_auth=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`,
+      'Set-Cookie': `cf_tetris_auth=${encodeURIComponent(token)}; Path=/; Secure; SameSite=Lax; Max-Age=86400`,
     },
   });
 }
