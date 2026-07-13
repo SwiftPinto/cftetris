@@ -5,4 +5,4 @@ pages_build_output_dir = "dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "cftetris-db"
-database_id = "your-database-id-here"
+database_id = "df2c26ed-548a-4981-a4dd-7876f0d7407f"
