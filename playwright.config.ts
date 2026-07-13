@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
@@ -11,4 +11,22 @@ export default defineConfig({
     baseURL: 'https://cftetris.pages.dev',
     trace: 'on-first-retry',
   },
+
+  projects: [
+    {
+      name: 'chromium-desktop',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: /.*\.spec\.ts/,
+    },
+    {
+      name: 'webkit-mobile',
+      use: { ...devices['iPhone 15'] },
+      testMatch: /.*\.spec\.ts/,
+    },
+    {
+      name: 'chromium-mobile',
+      use: { ...devices['Pixel 7'] },
+      testMatch: /.*\.spec\.ts/,
+    },
+  ],
 });
