@@ -27,7 +27,7 @@ describe('Board dimensions', () => {
 describe('Piece types', () => {
   it('has 7 piece types', () => expect(PIECE_TYPES.length).toBe(7));
   it('contains all expected types', () => {
-    expect(PIECE_TYPES.sort()).toEqual(['I', 'J', 'L', 'O', 'S', 'T', 'Z']);
+    expect([...PIECE_TYPES].sort()).toEqual(['I', 'J', 'L', 'O', 'S', 'T', 'Z']);
   });
 });
 

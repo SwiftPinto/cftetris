@@ -83,16 +83,10 @@ describe('isValidPosition', () => {
 
   it('rejects piece overlapping locked cells', () => {
     const board = createBoard();
-    // Place a block at row 22, col 4 (near bottom)
     board[22][4] = 1;
-    const piece = makePiece('T', 3, 20);
-    // T piece at rotation 0 has block at position (1,0) relative = row 21, col 4
-    // Actually T rot 0: [[0,1,0],[1,1,1],[0,0,0]]
-    // At x=3, y=20: blocks at (4,20), (3,21), (4,21), (5,21)
-    // That doesn't overlap board[22][4]. Let me set up a proper overlap.
-    const piece2 = makePiece('O', 4, 21);
-    board[22][4] = 1; // O piece at (4,21) would have blocks at (4,21),(5,21),(4,22),(5,22)
-    expect(isValidPosition(board, piece2)).toBe(false);
+    // O piece at y=21 covers rows 21-22 at cols 4-5, overlapping board[22][4]
+    const piece = makePiece('O', 4, 21);
+    expect(isValidPosition(board, piece)).toBe(false);
   });
 
   it('accepts piece that fits between locked cells', () => {
@@ -326,38 +320,27 @@ describe('edge cases / integration', () => {
   it('full game sequence: spawn, drop, lock, clear lines', () => {
     const board = createBoard();
 
-    // Fill row 23 completely and row 22 at cols 0-4
+    // Fill row 23 completely and row 22 at cols 0-5
     for (let c = 0; c < BOARD_WIDTH; c++) board[23][c] = 1;
     for (let c = 0; c < 6; c++) board[22][c] = 1;
 
-    // Spawn O piece at x=4 (cols 4,5)
+    // O piece at x=4 covers cols 4,5. Ghost drops to y=20 (row 22 obstacle at cols 4-5)
     const piece = makePiece('O', 4, 0);
     expect(isValidPosition(board, piece)).toBe(true);
 
-    // Drop to bottom: O piece (2 tall, rows 0-1 filled) → ghost at 20 (TOTAL_HEIGHT - 2 - 1 due to row 22 obstacle at cols 4-5)
-    // Actually row 22 has cols 0-5 filled. O at x=4 covers cols 4,5. So ghost drops to y=20 (row 21 is last valid position)
     const ghostY = getGhostY(board, piece);
     const dropped = { ...piece, y: ghostY };
-
-    // Lock the piece
     const locked = lockPiece(board, dropped);
 
-    // Row 22 now has cols 0-5 + O piece at cols 4-5 = all 10 cols filled?
-    // Actually O piece at y=20 covers rows 20 and 21 (y to y+1). Let me check ghostY first.
-    // Row 22 is an obstacle at cols 0-5. O at x=4: cols 4,5. 
-    // check y=21 (rows 21,22): row 22 cols 4,5 are filled → invalid
-    // So ghostY=20. Lock at y=20 fills rows 20-21 at cols 4,5.
-    // Row 21 now has cols 4,5 filled. Not a full row.
-    // Let me just verify the lock succeeded and lines were cleared appropriately.
+    // O piece locked at y=20 → rows 20-21 cols 4,5
     expect(locked[20][4]).toBe('O'.charCodeAt(0));
     expect(locked[21][4]).toBe('O'.charCodeAt(0));
 
-    // Row 23 should still be full (10 cells)
+    // Row 23 should still be full
     expect(locked[23].every(c => c !== 0)).toBe(true);
 
     const { board: cleared, linesCleared } = clearLines(locked);
     expect(linesCleared).toBe(1); // row 23 cleared
-    // Row 23 cleared → top row should now be empty
     expect(cleared[0].every(c => c === 0)).toBe(true);
   });
 

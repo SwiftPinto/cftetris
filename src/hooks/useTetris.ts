@@ -129,6 +129,9 @@ export function useTetris() {
       newState.gameStarted = false;
     }
 
+    // Update stateRef with cleared board so spawnNext validates against it
+    stateRef.current = { ...s, board: clearedBoard };
+
     setState(prev => ({ ...prev, ...newState }));
 
     // Spawn next piece
