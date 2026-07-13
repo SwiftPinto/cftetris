@@ -14,11 +14,12 @@ export default function TouchControls({
   onLeft, onRight, onSoftDrop, onHardDrop,
   onRotateCW, onRotateCCW, onHold,
 }: TouchControlsProps) {
-  const repeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const repeatRef = useRef<ReturnType<typeof setTimeout> | ReturnType<typeof setInterval> | null>(null);
   const swipeRef = useRef({ startY: 0, startX: 0, startTime: 0 });
 
   const stopRepeat = useCallback(() => {
     if (repeatRef.current) {
+      clearTimeout(repeatRef.current);
       clearInterval(repeatRef.current);
       repeatRef.current = null;
     }
@@ -26,8 +27,12 @@ export default function TouchControls({
 
   const startRepeat = useCallback((action: () => void) => {
     stopRepeat();
-    action();
-    repeatRef.current = setInterval(action, 50);
+    action(); // instant first move
+    // Wait 150ms before starting rapid repeat
+    const delay = window.setTimeout(() => {
+      repeatRef.current = window.setInterval(action, 50);
+    }, 150);
+    repeatRef.current = delay;
   }, [stopRepeat]);
 
   useEffect(() => {
