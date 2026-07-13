@@ -1,6 +1,5 @@
 import { useEffect, useCallback, useState } from 'react';
 import { useTetris } from './hooks/useTetris';
-import { useIsMobile } from './hooks/useIsMobile';
 import Board from './components/Board';
 import NextPiece from './components/NextPiece';
 import HoldPiece from './components/HoldPiece';
@@ -42,7 +41,6 @@ function Game() {
 
   const [scoreSaved, setScoreSaved] = useState(false);
   const [showScores, setShowScores] = useState(false);
-  const isMobile = useIsMobile();
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.repeat) return;
@@ -89,52 +87,49 @@ function Game() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  const touchVisible = isMobile && state.gameStarted && !state.gameOver;
+  // Touch controls are always rendered; CSS hides them on desktop
+  // Game-state visibility is handled by the `visible` prop
+  const touchVisible = state.gameStarted && !state.gameOver;
 
   return (
-    <div className={`app${isMobile ? ' app-mobile' : ''}`}>
-      {!isMobile && (
-        <header>
-          <h1>cf<span className="accent">TETRIS</span></h1>
-        </header>
-      )}
+    <div className="app">
+      <header className="desktop-only">
+        <h1>cf<span className="accent">TETRIS</span></h1>
+      </header>
 
       <div className="game-container">
-        {/* Mobile top bar: hold + score + next */}
-        {isMobile && (
-          <div className="mobile-top-bar">
-            <HoldPiece type={state.holdPiece} canHold={state.canHold} />
-            <ScoreDisplay score={state.score} level={state.level} lines={state.lines} />
-            <NextPiece piece={state.nextPiece} />
-          </div>
-        )}
+        {/* Mobile top bar — shown by CSS media query */}
+        <div className="mobile-top-bar">
+          <HoldPiece type={state.holdPiece} canHold={state.canHold} />
+          <ScoreDisplay score={state.score} level={state.level} lines={state.lines} />
+          <NextPiece piece={state.nextPiece} />
+        </div>
 
-        {/* Desktop left panel */}
-        {!isMobile && (
-          <div className="side-panel left-panel">
-            <HoldPiece type={state.holdPiece} canHold={state.canHold} />
-            <ScoreDisplay score={state.score} level={state.level} lines={state.lines} />
-          </div>
-        )}
+        {/* Desktop left panel — hidden by CSS on mobile */}
+        <div className="side-panel left-panel desktop-only-flex">
+          <HoldPiece type={state.holdPiece} canHold={state.canHold} />
+          <ScoreDisplay score={state.score} level={state.level} lines={state.lines} />
+        </div>
 
         <div className="board-wrapper">
           {!state.gameStarted && !state.gameOver && (
             <div className="start-overlay" onClick={startGame}>
               <div className="start-text">
                 <div className="start-title">cfTETRIS</div>
-                <div className="start-prompt">
-                  {isMobile ? 'Tap to start' : 'Click or press ENTER to start'}
+                <div className="start-prompt desktop-only">
+                  Click or press ENTER to start
                 </div>
-                {!isMobile && (
-                  <div className="controls-info">
-                    <div><kbd>← →</kbd> Move</div>
-                    <div><kbd>↓</kbd> Soft Drop</div>
-                    <div><kbd>↑</kbd> / <kbd>W</kbd> Rotate CW</div>
-                    <div><kbd>Z</kbd> Rotate CCW</div>
-                    <div><kbd>Space</kbd> Hard Drop</div>
-                    <div><kbd>C</kbd> / <kbd>Shift</kbd> Hold</div>
-                  </div>
-                )}
+                <div className="start-prompt mobile-only">
+                  Tap to start
+                </div>
+                <div className="controls-info desktop-only">
+                  <div><kbd>← →</kbd> Move</div>
+                  <div><kbd>↓</kbd> Soft Drop</div>
+                  <div><kbd>↑</kbd> / <kbd>W</kbd> Rotate CW</div>
+                  <div><kbd>Z</kbd> Rotate CCW</div>
+                  <div><kbd>Space</kbd> Hard Drop</div>
+                  <div><kbd>C</kbd> / <kbd>Shift</kbd> Hold</div>
+                </div>
               </div>
             </div>
           )}
@@ -148,22 +143,20 @@ function Game() {
           />
         </div>
 
-        {/* Desktop right panel */}
-        {!isMobile && (
-          <div className="side-panel right-panel">
-            <NextPiece piece={state.nextPiece} />
-            <HighScores
-              currentScore={state.score}
-              currentLevel={state.level}
-              currentLines={state.lines}
-              gameOver={state.gameOver}
-              onScoreSaved={() => setScoreSaved(true)}
-            />
-          </div>
-        )}
+        {/* Desktop right panel — hidden by CSS on mobile */}
+        <div className="side-panel right-panel desktop-only-flex">
+          <NextPiece piece={state.nextPiece} />
+          <HighScores
+            currentScore={state.score}
+            currentLevel={state.level}
+            currentLines={state.lines}
+            gameOver={state.gameOver}
+            onScoreSaved={() => setScoreSaved(true)}
+          />
+        </div>
       </div>
 
-      {/* Mobile: touch controls */}
+      {/* Touch controls — always rendered, CSS hides on desktop */}
       <TouchControls
         onLeft={moveLeft}
         onRight={moveRight}
@@ -175,28 +168,26 @@ function Game() {
         visible={touchVisible}
       />
 
-      {/* Mobile: high scores toggle */}
-      {isMobile && (
-        <>
-          <button
-            className="scores-toggle"
-            onClick={() => setShowScores(!showScores)}
-          >
-            {showScores ? '▼ HIDE SCORES' : '▲ TOP SCORES'}
-          </button>
-          {showScores && (
-            <div className="mobile-scores">
-              <HighScores
-                currentScore={state.score}
-                currentLevel={state.level}
-                currentLines={state.lines}
-                gameOver={state.gameOver}
-                onScoreSaved={() => setScoreSaved(true)}
-              />
-            </div>
-          )}
-        </>
-      )}
+      {/* Mobile scores toggle — shown by CSS media query */}
+      <div className="mobile-scores-section">
+        <button
+          className="scores-toggle"
+          onClick={() => setShowScores(!showScores)}
+        >
+          {showScores ? '▼ HIDE SCORES' : '▲ TOP SCORES'}
+        </button>
+        {showScores && (
+          <div className="mobile-scores">
+            <HighScores
+              currentScore={state.score}
+              currentLevel={state.level}
+              currentLines={state.lines}
+              gameOver={state.gameOver}
+              onScoreSaved={() => setScoreSaved(true)}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
