@@ -70,16 +70,12 @@ test.describe('mobile layout (iPhone 15)', () => {
 
   test('D-pad and action buttons are rendered', async ({ page }) => {
     await authenticate(page);
-    await page.locator('.start-overlay').click();
-    await page.waitForSelector('.dpad-up', { timeout: 3000 });
 
-    // D-pad buttons should exist
+    // Controls are always in the DOM on mobile — no need to start game
     await expect(page.locator('.dpad-up')).toBeVisible();
     await expect(page.locator('.dpad-left')).toBeVisible();
     await expect(page.locator('.dpad-right')).toBeVisible();
     await expect(page.locator('.dpad-down')).toBeVisible();
-
-    // Action buttons should exist
     await expect(page.locator('.hard-drop-btn')).toBeVisible();
     await expect(page.locator('.hold-btn')).toBeVisible();
   });

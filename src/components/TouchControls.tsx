@@ -8,12 +8,11 @@ interface TouchControlsProps {
   onRotateCW: () => void;
   onRotateCCW: () => void;
   onHold: () => void;
-  visible: boolean;
 }
 
 export default function TouchControls({
   onLeft, onRight, onSoftDrop, onHardDrop,
-  onRotateCW, onRotateCCW, onHold, visible,
+  onRotateCW, onRotateCCW, onHold,
 }: TouchControlsProps) {
   const repeatRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const swipeRef = useRef({ startY: 0, startX: 0, startTime: 0 });
@@ -35,7 +34,6 @@ export default function TouchControls({
     return () => stopRepeat();
   }, []);
 
-  // Swipe detection — skip button presses to avoid double-input
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if ((e.target as HTMLElement).tagName === 'BUTTON') return;
     const t = e.changedTouches[0];
@@ -47,88 +45,69 @@ export default function TouchControls({
     const dy = t.clientY - swipeRef.current.startY;
     const dx = t.clientX - swipeRef.current.startX;
     const dt = Date.now() - swipeRef.current.startTime;
-
-    // Fast swipe down → hard drop
     if (dy > 60 && dt < 300 && Math.abs(dy) > Math.abs(dx)) {
       onHardDrop();
     }
   }, [onHardDrop]);
 
-  if (!visible) {
-    return <div className="touch-controls touch-controls-hidden" aria-hidden="true" />;
-  }
-
+  // Always render. CSS @media (max-width: 640px) shows this. Desktop hides it.
   return (
     <div
       className="touch-controls"
+      style={{
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        maxWidth: 360,
+        padding: '4px 8px',
+        gap: 8,
+        touchAction: 'manipulation',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+      }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
       {/* D-Pad (left side) */}
-      <div className="dpad">
-        <button
-          className="touch-btn dpad-up"
+      <div style={{
+        display: 'grid',
+        gridTemplateAreas: `". up ." "left center right" ". down ."`,
+        gridTemplateColumns: 'repeat(3, 48px)',
+        gridTemplateRows: 'repeat(3, 48px)',
+        gap: 2,
+      }}>
+        <button className="touch-btn" style={{ gridArea: 'up' }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onRotateCW); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
-          aria-label="Rotate CW"
-        >
-          ↻
-        </button>
-        <button
-          className="touch-btn dpad-left"
+          aria-label="Rotate CW">↻</button>
+        <button className="touch-btn" style={{ gridArea: 'left' }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onLeft); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
-          aria-label="Move left"
-        >
-          ←
-        </button>
-        <button
-          className="touch-btn dpad-center"
-          tabIndex={-1}
-          disabled
-        />
-        <button
-          className="touch-btn dpad-right"
+          aria-label="Move left">←</button>
+        <button className="touch-btn" style={{ gridArea: 'center' }}
+          tabIndex={-1} disabled />
+        <button className="touch-btn" style={{ gridArea: 'right' }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onRight); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
-          aria-label="Move right"
-        >
-          →
-        </button>
-        <button
-          className="touch-btn dpad-down"
+          aria-label="Move right">→</button>
+        <button className="touch-btn" style={{ gridArea: 'down' }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onSoftDrop); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
-          aria-label="Soft drop"
-        >
-          ↓
-        </button>
+          aria-label="Soft drop">↓</button>
       </div>
 
       {/* Action buttons (right side) */}
-      <div className="action-buttons">
-        <button
-          className="touch-btn action-btn"
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <button className="touch-btn action-btn"
           onTouchStart={e => { e.preventDefault(); startRepeat(onRotateCCW); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
-          aria-label="Rotate CCW"
-        >
-          ↺
-        </button>
-        <button
-          className="touch-btn action-btn hard-drop-btn"
+          aria-label="Rotate CCW">↺</button>
+        <button className="touch-btn action-btn hard-drop-btn"
           onTouchStart={e => { e.preventDefault(); onHardDrop(); }}
-          aria-label="Hard drop"
-        >
-          ⏬
-        </button>
-        <button
-          className="touch-btn action-btn hold-btn"
+          aria-label="Hard drop">⏬</button>
+        <button className="touch-btn action-btn hold-btn"
           onTouchStart={e => { e.preventDefault(); onHold(); }}
-          aria-label="Hold"
-        >
-          H
-        </button>
+          aria-label="Hold">H</button>
       </div>
     </div>
   );

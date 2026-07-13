@@ -152,7 +152,7 @@ function Game() {
         </div>
       </div>
 
-      {/* Touch controls — always rendered, CSS hides on desktop */}
+      {/* Touch controls */}
       <TouchControls
         onLeft={moveLeft}
         onRight={moveRight}
@@ -161,7 +161,6 @@ function Game() {
         onRotateCW={rotateCW}
         onRotateCCW={rotateCCW}
         onHold={hold}
-        visible={true}
       />
 
       {/* Mobile scores toggle — shown by CSS media query */}
