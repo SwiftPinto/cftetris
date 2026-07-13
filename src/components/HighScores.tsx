@@ -14,13 +14,13 @@ interface HighScoresProps {
   currentLevel: number;
   currentLines: number;
   gameOver: boolean;
+  scoreSaved: boolean;
   onScoreSaved: () => void;
 }
 
-export default function HighScores({ currentScore, currentLevel, currentLines, gameOver, onScoreSaved }: HighScoresProps) {
+export default function HighScores({ currentScore, currentLevel, currentLines, gameOver, scoreSaved, onScoreSaved }: HighScoresProps) {
   const [scores, setScores] = useState<Score[]>([]);
   const [name, setName] = useState('');
-  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const fetchScores = useCallback(async () => {
@@ -40,7 +40,7 @@ export default function HighScores({ currentScore, currentLevel, currentLines, g
   }, [fetchScores]);
 
   const submitScore = async () => {
-    if (!name.trim() || submitted) return;
+    if (!name.trim() || scoreSaved) return;
     setLoading(true);
     try {
       const res = await fetch('/api/scores', {
@@ -54,7 +54,6 @@ export default function HighScores({ currentScore, currentLevel, currentLines, g
         }),
       });
       if (res.ok) {
-        setSubmitted(true);
         onScoreSaved();
         fetchScores();
       }
@@ -82,7 +81,7 @@ export default function HighScores({ currentScore, currentLevel, currentLines, g
               <tr><td colSpan={4} className="empty">No scores yet</td></tr>
             )}
             {scores.map((s, i) => (
-              <tr key={s.id} className={s.score === currentScore && submitted ? 'highlight' : ''}>
+              <tr key={s.id} className={s.score === currentScore && scoreSaved ? 'highlight' : ''}>
                 <td>{i + 1}</td>
                 <td className="name-cell">{s.name}</td>
                 <td>{s.score.toLocaleString()}</td>
@@ -92,7 +91,7 @@ export default function HighScores({ currentScore, currentLevel, currentLines, g
           </tbody>
         </table>
       </div>
-      {gameOver && currentScore > 0 && !submitted && (
+      {gameOver && currentScore > 0 && !scoreSaved && (
         <div className="submit-score">
           <input
             type="text"

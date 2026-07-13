@@ -158,6 +158,7 @@ function Game() {
             currentLevel={state.level}
             currentLines={state.lines}
             gameOver={state.gameOver}
+            scoreSaved={scoreSaved}
             onScoreSaved={() => setScoreSaved(true)}
           />
         </div>
@@ -189,6 +190,7 @@ function Game() {
               currentLevel={state.level}
               currentLines={state.lines}
               gameOver={state.gameOver}
+              scoreSaved={scoreSaved}
               onScoreSaved={() => setScoreSaved(true)}
             />
           </div>
