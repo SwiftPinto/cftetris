@@ -1,5 +1,6 @@
 import { SHAPES } from '../game/tetrominos';
-import { PIECE_COLORS, TetrominoType } from '../game/constants';
+import { PIECE_COLORS } from '../game/constants';
+import type { TetrominoType } from '../game/constants';
 
 interface NextPieceProps {
   piece: import('../game/board').Piece | null;

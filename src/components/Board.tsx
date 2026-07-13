@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useRef } from 'react';
 import type { Board as BoardType, Piece } from '../game/board';
 import { getShape } from '../game/board';
-import { BOARD_WIDTH, VISIBLE_HEIGHT, HIDDEN_ROWS, PIECE_COLORS, PIECE_COLORS_DIM, TetrominoType } from '../game/constants';
+import { BOARD_WIDTH, VISIBLE_HEIGHT, HIDDEN_ROWS, PIECE_COLORS, PIECE_COLORS_DIM } from '../game/constants';
+import type { TetrominoType } from '../game/constants';
 
 interface BoardProps {
   board: BoardType;
   currentPiece: Piece | null;
   ghostY: number;
   gameOver: boolean;
+  paused: boolean;
   onRestart: () => void;
 }
 
@@ -21,7 +23,7 @@ function getPieceColor(cellValue: number): string {
   return PIECE_COLORS[type] || '#fff';
 }
 
-export default function Board({ board, currentPiece, ghostY, gameOver, onRestart }: BoardProps) {
+export default function Board({ board, currentPiece, ghostY, gameOver, paused, onRestart }: BoardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const draw = useCallback(() => {
@@ -99,6 +101,19 @@ export default function Board({ board, currentPiece, ghostY, gameOver, onRestart
       }
     }
 
+    // Pause overlay
+    if (paused) {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = '#ff0';
+      ctx.font = '24px "Press Start 2P", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('PAUSED', width / 2, height / 2 - 10);
+      ctx.fillStyle = '#fff';
+      ctx.font = '8px "Press Start 2P", monospace';
+      ctx.fillText('Press P to resume', width / 2, height / 2 + 20);
+    }
+
     // Game over overlay
     if (gameOver) {
       ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -112,7 +127,7 @@ export default function Board({ board, currentPiece, ghostY, gameOver, onRestart
       ctx.fillText('Press ENTER or', width / 2, height / 2 + 20);
       ctx.fillText('click to restart', width / 2, height / 2 + 36);
     }
-  }, [board, currentPiece, ghostY, gameOver]);
+  }, [board, currentPiece, ghostY, gameOver, paused]);
 
   useEffect(() => {
     draw();

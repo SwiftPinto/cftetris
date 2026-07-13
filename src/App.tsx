@@ -18,6 +18,7 @@ export default function App() {
     rotateCW,
     rotateCCW,
     hold,
+    togglePause,
     ghostY,
   } = useTetris();
 
@@ -86,10 +87,10 @@ export default function App() {
       case 'p':
       case 'P':
         e.preventDefault();
-        // Pause handled via state
+        togglePause();
         break;
     }
-  }, [state.gameStarted, state.gameOver, startGame, moveLeft, moveRight, softDrop, hardDrop, rotateCW, rotateCCW, hold]);
+  }, [state.gameStarted, state.gameOver, startGame, moveLeft, moveRight, softDrop, hardDrop, rotateCW, rotateCCW, hold, togglePause]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
@@ -128,6 +129,7 @@ export default function App() {
             currentPiece={state.currentPiece}
             ghostY={ghostY}
             gameOver={state.gameOver && !scoreSaved}
+            paused={state.paused && !state.gameOver}
             onRestart={() => { setScoreSaved(false); startGame(); }}
           />
         </div>

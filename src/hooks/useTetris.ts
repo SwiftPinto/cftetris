@@ -11,7 +11,7 @@ import {
   spawnPiece,
 } from '../game/board';
 import { getKicks } from '../game/srs';
-import { createBag, PIECE_TYPES } from '../game/tetrominos';
+import { createBag } from '../game/tetrominos';
 import {
   TetrominoType,
   LINE_SCORES,
@@ -54,6 +54,8 @@ export function useTetris() {
   const bagRef = useRef<TetrominoType[]>([]);
   const dropTimerRef = useRef<number | null>(null);
   const lockDelayRef = useRef<number | null>(null);
+  const lockDelayCountRef = useRef(0);
+  const MAX_LOCK_DELAY_RESETS = 15;
   const stateRef = useRef(state);
   stateRef.current = state;
 
@@ -95,6 +97,7 @@ export function useTetris() {
     if (!lockDelayRef.current) {
       lockDelayRef.current = window.setTimeout(() => {
         lockDelayRef.current = null;
+        lockDelayCountRef.current = 0;
         doLock();
       }, 500);
     }
@@ -142,11 +145,10 @@ export function useTetris() {
 
   const startGame = useCallback(() => {
     bagRef.current = createBag();
-    const firstPiece = spawnPiece(nextFromBag());
-    const secondPiece = spawnPiece(nextFromBag());
     const piece = spawnPiece(nextFromBag());
+    const nextPiece = spawnPiece(nextFromBag());
 
-    if (!isValidPosition(createBoard(), firstPiece)) {
+    if (!isValidPosition(createBoard(), piece)) {
       setState(prev => ({ ...prev, gameOver: true }));
       return;
     }
@@ -155,7 +157,7 @@ export function useTetris() {
       ...initialState,
       board: createBoard(),
       currentPiece: piece,
-      nextPiece: secondPiece,
+      nextPiece,
       holdPiece: null,
       canHold: true,
       gameStarted: true,
@@ -178,10 +180,11 @@ export function useTetris() {
     const newPiece = { ...s.currentPiece, x: s.currentPiece.x - 1 };
     if (isValidPosition(s.board, newPiece)) {
       setState(prev => ({ ...prev, currentPiece: newPiece }));
-      // Reset lock delay on successful move
-      if (lockDelayRef.current) {
+      // Reset lock delay on successful move (capped to prevent infinite stalling)
+      if (lockDelayRef.current && lockDelayCountRef.current < MAX_LOCK_DELAY_RESETS) {
         clearTimeout(lockDelayRef.current);
         lockDelayRef.current = null;
+        lockDelayCountRef.current++;
       }
     }
   }, []);
@@ -192,9 +195,10 @@ export function useTetris() {
     const newPiece = { ...s.currentPiece, x: s.currentPiece.x + 1 };
     if (isValidPosition(s.board, newPiece)) {
       setState(prev => ({ ...prev, currentPiece: newPiece }));
-      if (lockDelayRef.current) {
+      if (lockDelayRef.current && lockDelayCountRef.current < MAX_LOCK_DELAY_RESETS) {
         clearTimeout(lockDelayRef.current);
         lockDelayRef.current = null;
+        lockDelayCountRef.current++;
       }
     }
   }, []);
@@ -213,13 +217,21 @@ export function useTetris() {
     const ghostY = getGhostY(s.board, s.currentPiece);
     const distance = ghostY - s.currentPiece.y;
     const droppedPiece = { ...s.currentPiece, y: ghostY };
-    setState(prev => ({ ...prev, currentPiece: droppedPiece, score: prev.score + distance * HARD_DROP_SCORE }));
-    // Immediately lock
+    const newScore = s.score + distance * HARD_DROP_SCORE;
+
+    // Update ref synchronously so doLock sees the correct position & score
+    stateRef.current = { ...s, currentPiece: droppedPiece, score: newScore };
+
+    // Clear any pending lock delay
     if (lockDelayRef.current) {
       clearTimeout(lockDelayRef.current);
       lockDelayRef.current = null;
     }
-    setTimeout(() => doLock(), 0);
+    lockDelayCountRef.current = 0;
+
+    // Commit visual state and lock immediately
+    setState(prev => ({ ...prev, currentPiece: droppedPiece, score: newScore }));
+    doLock();
   }, [doLock]);
 
   const rotate = useCallback((direction: 1 | -1) => {
@@ -241,9 +253,10 @@ export function useTetris() {
       };
       if (isValidPosition(s.board, newPiece)) {
         setState(prev => ({ ...prev, currentPiece: newPiece }));
-        if (lockDelayRef.current) {
+        if (lockDelayRef.current && lockDelayCountRef.current < MAX_LOCK_DELAY_RESETS) {
           clearTimeout(lockDelayRef.current);
           lockDelayRef.current = null;
+          lockDelayCountRef.current++;
         }
         return;
       }
@@ -268,8 +281,11 @@ export function useTetris() {
         canHold: false,
       }));
     } else {
-      // First hold
+      // First hold — swap with next piece
       const newPiece = s.nextPiece ? { ...s.nextPiece } : null;
+      if (newPiece && !isValidPosition(s.board, newPiece)) {
+        return; // can't place the next piece at spawn — reject hold
+      }
       const newNext = spawnNext();
       if (!newNext) {
         setState(prev => ({ ...prev, holdPiece: currentType, canHold: false }));
@@ -283,7 +299,7 @@ export function useTetris() {
         canHold: false,
       }));
     }
-  }, [spawnNext, nextFromBag]);
+  }, [spawnNext]);
 
   // Sync drop timer when level changes
   useEffect(() => {
@@ -291,6 +307,13 @@ export function useTetris() {
       startDropTimer();
     }
   }, [state.level, state.gameStarted, state.gameOver, state.paused, startDropTimer]);
+
+  const togglePause = useCallback(() => {
+    setState(prev => {
+      if (!prev.gameStarted || prev.gameOver) return prev;
+      return { ...prev, paused: !prev.paused };
+    });
+  }, []);
 
   return {
     state,
@@ -302,6 +325,7 @@ export function useTetris() {
     rotateCW: () => rotate(1),
     rotateCCW: () => rotate(-1),
     hold,
+    togglePause,
     ghostY: state.currentPiece ? getGhostY(state.board, state.currentPiece) : 0,
   };
 }
