@@ -33,10 +33,11 @@ export default function TouchControls({
 
   useEffect(() => {
     return () => stopRepeat();
-  }, [stopRepeat]);
+  }, []);
 
-  // Swipe detection on the control area
+  // Swipe detection — skip button presses to avoid double-input
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if ((e.target as HTMLElement).tagName === 'BUTTON') return;
     const t = e.changedTouches[0];
     swipeRef.current = { startY: t.clientY, startX: t.clientX, startTime: Date.now() };
   }, []);
@@ -106,7 +107,8 @@ export default function TouchControls({
       <div className="action-buttons">
         <button
           className="touch-btn action-btn"
-          onTouchStart={e => { e.preventDefault(); onRotateCCW(); }}
+          onTouchStart={e => { e.preventDefault(); startRepeat(onRotateCCW); }}
+          onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
           aria-label="Rotate CCW"
         >
           ↺

@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useState } from 'react';
 import { useTetris } from './hooks/useTetris';
+import { useIsMobile } from './hooks/useIsMobile';
 import Board from './components/Board';
 import NextPiece from './components/NextPiece';
 import HoldPiece from './components/HoldPiece';
@@ -8,20 +9,6 @@ import HighScores from './components/HighScores';
 import PasswordGate from './components/PasswordGate';
 import TouchControls from './components/TouchControls';
 import './App.css';
-
-function useIsMobile() {
-  const [mobile, setMobile] = useState(
-    () => 'ontouchstart' in window || navigator.maxTouchPoints > 0,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 640px) and (pointer: coarse)');
-    const handler = (e: MediaQueryListEvent) => setMobile(e.matches);
-    setMobile(mq.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-  return mobile;
-}
 
 export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
