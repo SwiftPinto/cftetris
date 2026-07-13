@@ -42,6 +42,17 @@ function Game() {
   const [scoreSaved, setScoreSaved] = useState(false);
   const [showScores, setShowScores] = useState(false);
 
+  // Auto-expand scores on game over so user sees the submit form
+  useEffect(() => {
+    if (state.gameOver && state.score > 0) {
+      setShowScores(true);
+      // Scroll scores into view on mobile
+      setTimeout(() => {
+        document.querySelector('.mobile-scores')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [state.gameOver, state.score]);
+
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.repeat) return;
 
