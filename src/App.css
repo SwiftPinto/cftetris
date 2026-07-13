@@ -19,6 +19,13 @@ html, body, #root {
   overflow: hidden;
 }
 
+@media (max-width: 640px) {
+  html, body, #root {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -383,7 +390,9 @@ header .accent {
 
   .app .board-wrapper canvas {
     max-width: 100%;
+    max-height: 55vh;
     height: auto;
+    width: auto;
   }
 }
 

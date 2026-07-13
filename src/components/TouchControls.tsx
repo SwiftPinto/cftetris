@@ -59,8 +59,8 @@ export default function TouchControls({
         alignItems: 'center',
         width: '100%',
         maxWidth: 360,
-        padding: '4px 8px',
-        gap: 8,
+        padding: '2px 8px',
+        gap: 4,
         touchAction: 'manipulation',
         userSelect: 'none',
         WebkitUserSelect: 'none',
@@ -72,25 +72,25 @@ export default function TouchControls({
       <div style={{
         display: 'grid',
         gridTemplateAreas: `". up ." "left center right" ". down ."`,
-        gridTemplateColumns: 'repeat(3, 48px)',
-        gridTemplateRows: 'repeat(3, 48px)',
+        gridTemplateColumns: 'repeat(3, 42px)',
+        gridTemplateRows: 'repeat(3, 42px)',
         gap: 2,
       }}>
-        <button className="touch-btn dpad-up" style={{ gridArea: 'up' }}
+        <button className="touch-btn dpad-up" style={{ gridArea: 'up', width: 42, height: 42, fontSize: 16 }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onRotateCW); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
           aria-label="Rotate CW">↻</button>
-        <button className="touch-btn dpad-left" style={{ gridArea: 'left' }}
+        <button className="touch-btn dpad-left" style={{ gridArea: 'left', width: 42, height: 42, fontSize: 16 }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onLeft); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
           aria-label="Move left">←</button>
-        <button className="touch-btn dpad-center" style={{ gridArea: 'center' }}
+        <button className="touch-btn dpad-center" style={{ gridArea: 'center', width: 42, height: 42 }}
           tabIndex={-1} disabled />
-        <button className="touch-btn dpad-right" style={{ gridArea: 'right' }}
+        <button className="touch-btn dpad-right" style={{ gridArea: 'right', width: 42, height: 42, fontSize: 16 }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onRight); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
           aria-label="Move right">→</button>
-        <button className="touch-btn dpad-down" style={{ gridArea: 'down' }}
+        <button className="touch-btn dpad-down" style={{ gridArea: 'down', width: 42, height: 42, fontSize: 16 }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onSoftDrop); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
           aria-label="Soft drop">↓</button>
@@ -98,14 +98,14 @@ export default function TouchControls({
 
       {/* Action buttons (right side) */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <button className="touch-btn action-btn"
+        <button className="touch-btn action-btn" style={{ width: 48, height: 48, fontSize: 20 }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onRotateCCW); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
           aria-label="Rotate CCW">↺</button>
-        <button className="touch-btn action-btn hard-drop-btn"
+        <button className="touch-btn action-btn hard-drop-btn" style={{ width: 48, height: 48, fontSize: 20 }}
           onTouchStart={e => { e.preventDefault(); onHardDrop(); }}
           aria-label="Hard drop">⏬</button>
-        <button className="touch-btn action-btn hold-btn"
+        <button className="touch-btn action-btn hold-btn" style={{ width: 48, height: 48, fontSize: 16 }}
           onTouchStart={e => { e.preventDefault(); onHold(); }}
           aria-label="Hold">H</button>
       </div>
