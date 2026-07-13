@@ -13,8 +13,10 @@ export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    const hasAuth = document.cookie.split(';').some(c => c.trim().startsWith('cf_tetris_auth='));
-    if (hasAuth) setAuthenticated(true);
+    // Verify auth cookie with the server — not just checking existence
+    fetch('/api/auth').then(r => r.json()).then(d => {
+      if (d.authenticated) setAuthenticated(true);
+    }).catch(() => {});
   }, []);
 
   if (!authenticated) {
