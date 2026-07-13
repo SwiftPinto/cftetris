@@ -432,6 +432,13 @@ header .accent {
   -webkit-user-select: none;
 }
 
+.touch-controls-hidden {
+  visibility: hidden;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 /* D-Pad: 3x3 grid */
 .dpad {
   display: grid;
