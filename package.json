@@ -1,0 +1,28 @@
+{
+  "name": "cftetris",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "pages:dev": "wrangler pages dev dist --d1=DB",
+    "pages:deploy": "wrangler pages deploy dist",
+    "db:migrate:local": "wrangler d1 execute DB --local --file=./migrations/0001_create_scores.sql",
+    "db:migrate:remote": "wrangler d1 execute DB --remote --file=./migrations/0001_create_scores.sql"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240712.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.4",
+    "wrangler": "^3.65.1"
+  }
+}
