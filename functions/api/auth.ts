@@ -1,8 +1,7 @@
-// POST /api/auth — validates password and sets signed cookie
+// POST /api/auth — validates password and sets a persistent cookie
 
 interface Env {
   SITE_PASSWORD: string;
-  COOKIE_SECRET: string;
 }
 
 export async function onRequest(context: {
@@ -26,25 +25,11 @@ export async function onRequest(context: {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  // Create signed token: base64(expiry:hmacSignature)
-  const expiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    'raw',
-    encoder.encode(env.COOKIE_SECRET),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign'],
-  );
-  const data = encoder.encode(`${expiry}:${env.SITE_PASSWORD}`);
-  const sigBytes = await crypto.subtle.sign('HMAC', key, data);
-  const sig = btoa(String.fromCharCode(...new Uint8Array(sigBytes)));
-  const token = btoa(`${expiry}:${sig}`);
-
+  // 10-year cookie — effectively permanent
   return new Response(JSON.stringify({ ok: true }), {
     headers: {
       'Content-Type': 'application/json',
-      'Set-Cookie': `cf_tetris_auth=${encodeURIComponent(token)}; Path=/; Secure; SameSite=Lax; Max-Age=86400`,
+      'Set-Cookie': `cf_tetris_auth=1; Path=/; Secure; SameSite=Lax; Max-Age=315360000`,
     },
   });
 }
