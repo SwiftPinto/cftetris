@@ -55,14 +55,7 @@ export default function TouchControls({
   }, [onHardDrop]);
 
   if (!visible) {
-    // Always render in DOM so CSS can control visibility;
-    // use a hidden wrapper when game is not active
-    return (
-      <div
-        className="touch-controls touch-controls-hidden"
-        aria-hidden="true"
-      />
-    );
+    return <div className="touch-controls touch-controls-hidden" aria-hidden="true" />;
   }
 
   return (

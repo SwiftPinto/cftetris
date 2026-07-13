@@ -87,10 +87,6 @@ function Game() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  // Touch controls are always rendered; CSS hides them on desktop
-  // Game-state visibility is handled by the `visible` prop
-  const touchVisible = state.gameStarted && !state.gameOver;
-
   return (
     <div className="app">
       <header className="desktop-only">
@@ -165,7 +161,7 @@ function Game() {
         onRotateCW={rotateCW}
         onRotateCCW={rotateCCW}
         onHold={hold}
-        visible={touchVisible}
+        visible={true}
       />
 
       {/* Mobile scores toggle — shown by CSS media query */}
