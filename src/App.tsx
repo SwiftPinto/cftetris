@@ -5,9 +5,26 @@ import NextPiece from './components/NextPiece';
 import HoldPiece from './components/HoldPiece';
 import ScoreDisplay from './components/ScoreDisplay';
 import HighScores from './components/HighScores';
+import PasswordGate from './components/PasswordGate';
 import './App.css';
 
 export default function App() {
+  const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check if auth cookie exists
+    const hasAuth = document.cookie.split(';').some(c => c.trim().startsWith('cf_tetris_auth='));
+    if (hasAuth) setAuthenticated(true);
+  }, []);
+
+  if (!authenticated) {
+    return <PasswordGate onUnlock={() => setAuthenticated(true)} />;
+  }
+
+  return <Game />;
+}
+
+function Game() {
   const {
     state,
     startGame,
