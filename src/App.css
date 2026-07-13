@@ -348,3 +348,240 @@ header .accent {
   font-size: 7px;
   margin-top: 12px;
 }
+
+/* ============ MOBILE LAYOUT ============ */
+
+.app-mobile {
+  padding: 4px;
+  gap: 4px;
+  justify-content: flex-start;
+}
+
+.app-mobile .game-container {
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  width: 100%;
+}
+
+.mobile-top-bar {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+  width: 100%;
+  max-width: 300px;
+  justify-content: center;
+}
+
+.mobile-top-bar .panel {
+  flex: 1;
+  padding: 4px;
+  min-width: 0;
+}
+
+.mobile-top-bar .panel h3 {
+  font-size: 6px;
+  margin-bottom: 3px;
+}
+
+.mobile-top-bar .score-panel {
+  gap: 4px;
+}
+
+.mobile-top-bar .score-item .label {
+  font-size: 5px;
+}
+
+.mobile-top-bar .score-item .value {
+  font-size: 8px;
+}
+
+.app-mobile .board-wrapper canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============ TOUCH CONTROLS ============ */
+
+.touch-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+  padding: 4px 8px;
+  gap: 8px;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* D-Pad: 3x3 grid */
+.dpad {
+  display: grid;
+  grid-template-areas:
+    '. up .'
+    'left center right'
+    '. down .';
+  grid-template-columns: repeat(3, 48px);
+  grid-template-rows: repeat(3, 48px);
+  gap: 2px;
+}
+
+.dpad-up    { grid-area: up; }
+.dpad-left  { grid-area: left; }
+.dpad-center { grid-area: center; }
+.dpad-right { grid-area: right; }
+.dpad-down  { grid-area: down; }
+
+/* Action buttons column */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Button base */
+.touch-btn {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.1s;
+}
+
+.touch-btn:active {
+  background: var(--border);
+}
+
+.touch-btn:disabled {
+  opacity: 0.2;
+  background: transparent;
+}
+
+.dpad-center:disabled {
+  cursor: default;
+}
+
+.action-btn {
+  width: 56px;
+  height: 56px;
+  font-size: 22px;
+}
+
+.hard-drop-btn {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.hold-btn {
+  border-color: #f0a000;
+  color: #f0a000;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* ============ MOBILE SCORES TOGGLE ============ */
+
+.scores-toggle {
+  width: 100%;
+  max-width: 300px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 6px;
+  border-radius: 4px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.scores-toggle:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.mobile-scores {
+  width: 100%;
+  max-width: 300px;
+}
+
+.mobile-scores .panel {
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+/* Landscape phone: keep things compact */
+@media (max-height: 500px) and (pointer: coarse) {
+  .app-mobile {
+    flex-direction: row;
+    gap: 6px;
+    padding: 4px;
+  }
+
+  .app-mobile .game-container {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .app-mobile .board-wrapper canvas {
+    max-height: 95vh;
+    width: auto;
+  }
+
+  .mobile-top-bar {
+    flex-direction: column;
+    width: auto;
+    max-width: none;
+    gap: 2px;
+  }
+
+  .mobile-top-bar .panel {
+    padding: 2px 4px;
+  }
+
+  .touch-controls {
+    flex-direction: column;
+    gap: 4px;
+    max-width: none;
+    width: auto;
+    padding: 2px;
+  }
+
+  .action-buttons {
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .action-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .dpad {
+    grid-template-columns: repeat(3, 36px);
+    grid-template-rows: repeat(3, 36px);
+  }
+
+  .touch-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .scores-toggle,
+  .mobile-scores {
+    display: none;
+  }
+}
