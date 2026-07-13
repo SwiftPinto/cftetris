@@ -76,21 +76,21 @@ export default function TouchControls({
         gridTemplateRows: 'repeat(3, 48px)',
         gap: 2,
       }}>
-        <button className="touch-btn" style={{ gridArea: 'up' }}
+        <button className="touch-btn dpad-up" style={{ gridArea: 'up' }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onRotateCW); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
           aria-label="Rotate CW">↻</button>
-        <button className="touch-btn" style={{ gridArea: 'left' }}
+        <button className="touch-btn dpad-left" style={{ gridArea: 'left' }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onLeft); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
           aria-label="Move left">←</button>
-        <button className="touch-btn" style={{ gridArea: 'center' }}
+        <button className="touch-btn dpad-center" style={{ gridArea: 'center' }}
           tabIndex={-1} disabled />
-        <button className="touch-btn" style={{ gridArea: 'right' }}
+        <button className="touch-btn dpad-right" style={{ gridArea: 'right' }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onRight); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
           aria-label="Move right">→</button>
-        <button className="touch-btn" style={{ gridArea: 'down' }}
+        <button className="touch-btn dpad-down" style={{ gridArea: 'down' }}
           onTouchStart={e => { e.preventDefault(); startRepeat(onSoftDrop); }}
           onTouchEnd={e => { e.preventDefault(); stopRepeat(); }}
           aria-label="Soft drop">↓</button>
